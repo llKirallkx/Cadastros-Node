@@ -1,0 +1,15 @@
+{
+  "name": "cadastros---node",
+  "version": "1.0.0",
+  "description": "Cadastros",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^19.7.5",
+    "xlsx": "^0.18.5"
+  }
+}
