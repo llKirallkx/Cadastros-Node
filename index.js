@@ -78,13 +78,13 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
     
     while (count < jsonLeght){
 
-        await page.goto('https://prd.pontofopag.com.br/Funcionario/Grid');
-        await page.waitForSelector('#btIncluir');
-        await page.click('#btIncluir');
-        await page.type('[name="Matricula"]', matricula);
+      await page.goto('https://prd.pontofopag.com.br/Funcionario/Grid');
+      await page.waitForSelector('#btIncluir');
+      await page.click('#btIncluir');
+      await page.type('[name="Matricula"]', matricula);
 
-        count++;
-        console.log(`Feito ${count} de ${jsonLeght}`)
+      count++;
+      console.log(`Feito ${count} de ${jsonLeght}`)
     }
 
 
