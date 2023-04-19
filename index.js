@@ -43,7 +43,7 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
     });
     
     const page = await browser.newPage();
-    await page.setViewport({ width: 1366, height: 720});
+    await page.setViewport({ width: 1366, height: 500});
 
     await page.goto('https://prd.pontofopag.com.br');
     await page.type('[name="login"]', login ); // informação de login e senha 
@@ -87,15 +87,41 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
       await page.type('[name="Pis"]', nPis);
       await page.type('[name="CPF"]', cpf);
       await page.type('[name="Nome"]', nome);
-      // await page.type('[name="Dataadmissao"]', dataFormatada);
-      // await page.type('[name="Empresa"]', empresa);
-      // await page.keyboard.press("Tab");
-      // await page.type('[name="Departamento"]', departamento);
-      // await page.keyboard.press("Tab");
-      // await page.type('[name="Funcao"]', funcao);
-      // await page.keyboard.press("Tab");
-      // await page.type('[name="Horario"]', horario);
-      // await page.keyboard.press("Tab");
+      await page.type('[name="Dataadmissao"]', dataFormatada);
+      await page.type('[name="Empresa"]', empresa);
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(333);
+      if (errorPopup) {
+        console.log(`empresa ${empresa} do funcionário ${nome} nao cadastrada`);
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(333);
+      }
+
+      await page.type('[name="Departamento"]', departamento);
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(333);
+      if (errorPopup) {
+        console.log(`Departamento ${departamento} do funcionário ${nome} nao cadastrado`);
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(333);
+      }
+      await page.type('[name="Funcao"]', funcao);
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(333);
+      if (errorPopup) {
+        console.log(`Funcao ${funcao} do funcionário ${nome} nao cadastrada`);
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(333);
+      }
+
+      await page.type('[name="Horario"]', horario);
+      await page.keyboard.press("Tab");
+      await page.waitForTimeout(333);
+      if (errorPopup) {
+        console.log(`Horario ${horario} do funcionário ${nome} nao cadastrada`);
+        await page.keyboard.press("Escape");
+        await page.waitForTimeout(333);
+      }
       
       if ( alocacao === null){
         console.log(`Alocação ${count} é nulo`);
@@ -104,47 +130,62 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
       } else {
         await page.type('[name="Alocacao"]', alocacao);
         await page.keyboard.press("Tab");
+        await page.waitForTimeout(333);
         if (errorPopup) {
-          console.log(`Alocação ${alocacao} do funcionário ${nome} nao cadastrada`)
+          console.log(`Alocação ${alocacao} do funcionário ${nome} nao cadastrada`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(333);
         }
       }
 
-      // if ( contrato === null){
-      //   console.log(`contrato ${count} é nulo`);
-      // } else if (contrato === undefined){
-      //   console.log(`contrato ${count} não foi definido`);
-      // } else {
-      //   await page.type('[name="Contrato"]', contrato);
-      //   await page.keyboard.press("Tab");
-      // }
+      if ( contrato === null){
+        console.log(`contrato ${count} é nulo`);
+      } else if (contrato === undefined){
+        console.log(`contrato ${count} não foi definido`);
+      } else {
+        await page.type('[name="Contrato"]', contrato);
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(333);
+        if (errorPopup) {
+          console.log(`contrato ${contrato} do funcionário ${nome} nao cadastrada`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(333);
+        }
+      }
 
-      // if ( supervisor === null){
-      //   console.log(`supervisor ${count} é nulo`);
-      // } else if (supervisor === undefined){
-      //   console.log(`supervisor ${count} não foi definido`);
-      // } else {
-      //   await page.type('[name="Supervisor"]', supervisor);
-      //   await page.keyboard.press("Tab");
-      //}
+      if ( supervisor === null){
+        console.log(`supervisor ${count} é nulo`);
+      } else if (supervisor === undefined){
+        console.log(`supervisor ${count} não foi definido`);
+      } else {
+        await page.type('[name="Supervisor"]', supervisor);
+        await page.keyboard.press("Tab");
+        await page.waitForTimeout(333);
+        if (errorPopup) {
+          console.log(`Alocação ${alocacao} do funcionário ${nome} nao cadastrada`);
+          await page.keyboard.press("Escape");
+          await page.waitForTimeout(333);
+        }
+      }
 
-      // if (bh === 'nao' || bh === 'não' || bh === 'NÃO' || bh === 'NAO') {
-      //   await page.click('[name="bNaoentrarbanco"]');
-      // }
+      if (bh === 'nao' || bh === 'não' || bh === 'NÃO' || bh === 'NAO') {
+        await page.click('[name="bNaoentrarbanco"]');
+      }
 
-      // if (registradorWeb === 'sim' || registradorWeb === 'SIM') {
-      //   await page.click('[name="UtilizaWebAppPontofopag"]');
-      //   senhaEnable = true;
-      // }
+      if (registradorWeb === 'sim' || registradorWeb === 'SIM') {
+        await page.click('[name="UtilizaWebAppPontofopag"]');
+        senhaEnable = true;
+      }
 
-      // if (appUse === 'sim' || appUse === 'SIM') {
-      //   await page.click('[name="UtilizaAppPontofopag"]');
-      //   senhaEnable = true;
-      // }
+      if (appUse === 'sim' || appUse === 'SIM') {
+        await page.click('[name="UtilizaAppPontofopag"]');
+        senhaEnable = true;
+      }
 
-      // if (senhaEnable === true) {
-      //   await page.type('[name="Mob_Senha"]', senhaApp);
-      // }
-      await page.waitForTimeout(3000);
+      if (senhaEnable === true) {
+        await page.type('[name="Mob_Senha"]', senhaApp);
+      }
+      await page.waitForTimeout(10000);
 
       count++;
       console.log(`Feito ${count} de ${jsonLeght}`)
