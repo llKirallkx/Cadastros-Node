@@ -3,13 +3,13 @@ const fs = require('fs');
 const puppeteer = require('puppeteer');
 
 
-const workbook = XLSX.readFile('IMPLANTAÇÃO_PONTOFOPAG.xlsx', {
+const workbook = XLSX.readFile('AUTOMPONTO.xlsx', {
   type: 'binary',
   cellDates: true,
   cellNF: false,
   cellText: false
 });
-const sheetName = 'Dados_Funcionários'; // nome do sheet
+const sheetName = 'automação'; // nome do sheet
 const worksheet = workbook.Sheets[sheetName];
 
 // Converter a planilha para um array de objetos JavaScript
@@ -32,9 +32,8 @@ fs.writeFileSync('dados_funcionarios.json', jsonString, (err) => {
 
 
 // acessos para o pontofopag 
-const login = 'epaysmyrh';
+const login = 'epaysclimatich';
 const senha = 'Z6GdVzLzEgFtz9KH@2023';
-
 
 // Puppeteer
 (async () => {
@@ -43,7 +42,7 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
     });
     
     const page = await browser.newPage();
-    await page.setViewport({ width: 1366, height: 500});
+    await page.setViewport({ width: 1366, height: 612});
 
     await page.goto('https://prd.pontofopag.com.br');
     await page.type('[name="login"]', login ); // informação de login e senha 
@@ -54,74 +53,90 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
     while (count < jsonLeght){
 
       // DE - PARA
-        let numberMatricula = jsonData[count]['* Matrícula:'];
+        let numberMatricula = jsonData[count]['Matrícula:'];
         let matricula = numberMatricula.toString();
-        let nPis = jsonData[count].PIS;
-        let cpf = jsonData[count]['* CPF'];
-        let nome = jsonData[count]['* Nome'];
-        let dataAdmissao = jsonData[count]["* Data Admissao"];
-        const dia = String(dataAdmissao.getDate()).padStart(2, '0');
-        const mes = String(dataAdmissao.getMonth() + 1).padStart(2, '0');
-        const ano = String(dataAdmissao.getFullYear());
-        const dataFormatada = dia + mes + ano;
-        let empresa = jsonData[count]["* Empresa (Razão Social)"];
+        
+        let numberPIS = jsonData[count]['PIS'];
+        let nPis = null;
+        if ( numberPIS === null){
+          nPis = numberPIS;
+        } else if (numberPIS === undefined){
+          nPis = numberPIS;
+        } else {
+          nPis = numberPIS.toString();
+        }
+
+        let cpf = jsonData[count]['CPF'];
+        let nome = jsonData[count]['Nome'];
+        let dataAdmissao = jsonData[count]["Data Admissao"];
+        let dia = String(dataAdmissao.getDate()).padStart(2, '0');
+        let mes = String(dataAdmissao.getMonth() + 1).padStart(2, '0');
+        let ano = String(dataAdmissao.getFullYear());
+        let dataFormatada = dia + mes + ano;
+        let empresa = jsonData[count]["Empresa"];
         let cnpj = jsonData[count]["* CNPJ "];
-        let departamento = jsonData[count]["* Departamento"];
-        let alocacao = jsonData[count]["Alocação"];
+        let departamento = jsonData[count]["Departamento"];
+        let numberAlocacao = jsonData[count]["Alocação"];
+        let alocacao = null;
+        if ( numberAlocacao === null){
+          alocacao = numberAlocacao;
+        } else if (alocacao === undefined){
+          alocacao = numberAlocacao;
+        } else {
+          alocacao = numberAlocacao.toString();
+        }
         let contrato = jsonData[count]["Contrato"];
-        let supervisor = jsonData[count]["Supervisor"];
-        let funcao = jsonData[count]["* Função"];
-        let horario = jsonData[count]["* Nome do Horário"];
+        let numberSupervisor = jsonData[count]["Supervisor"];
+        let supervisor = numberSupervisor.toString();
+        let numberFuncao = jsonData[count]["Função"];
+        let funcao = numberFuncao.toString();
+
+        let numberHorario = jsonData[count]["Horário"];
+        let horario = numberHorario.toString();
         let bh = jsonData[count]["* Vincula ao Banco de Horas?"]
         let registradorWeb = jsonData[count]["* Utiliza Registrador Web?"]
-        let senhaApp = jsonData[count]["Senha Registrador WebApp/App Ponto"]
+        let numberSenhaApp = jsonData[count]["Senha"]
+        let senhaApp = numberSenhaApp.toString();
         let appUse = jsonData[count]["Utiliza aplicativo Pontofopag?"]
         let senhaEnable = false;
-        const errorPopup = await page.$('.modal-header');
+        const errorMessage = "Registro não encontrado.";
 
       await page.goto('https://prd.pontofopag.com.br/Funcionario/Grid');
       await page.waitForSelector('#btIncluir');
       await page.click('#btIncluir');
       await page.waitForSelector('[name="Matricula"]');
+      await page.waitForTimeout(500);
       await page.type('[name="Matricula"]', matricula);
-      await page.type('[name="Pis"]', nPis);
+      if ( nPis === null){
+        console.log(`PIS do funcioario ${nome} é nulo`);
+      } else if (nPis === undefined){
+        console.log(`PIS do funcioario ${nome} não foi preenchido`);
+      } else {
+        await page.type('[name="Pis"]', nPis);;
+      }
       await page.type('[name="CPF"]', cpf);
       await page.type('[name="Nome"]', nome);
       await page.type('[name="Dataadmissao"]', dataFormatada);
+
       await page.type('[name="Empresa"]', empresa);
       await page.keyboard.press("Tab");
-      await page.waitForTimeout(333);
-      if (errorPopup) {
-        console.log(`empresa ${empresa} do funcionário ${nome} nao cadastrada`);
-        await page.keyboard.press("Escape");
-        await page.waitForTimeout(333);
-      }
+      await page.waitForTimeout(500);
 
       await page.type('[name="Departamento"]', departamento);
       await page.keyboard.press("Tab");
-      await page.waitForTimeout(333);
-      if (errorPopup) {
-        console.log(`Departamento ${departamento} do funcionário ${nome} nao cadastrado`);
-        await page.keyboard.press("Escape");
-        await page.waitForTimeout(333);
-      }
+      await page.waitForTimeout(300);
+
+
       await page.type('[name="Funcao"]', funcao);
       await page.keyboard.press("Tab");
-      await page.waitForTimeout(333);
-      if (errorPopup) {
-        console.log(`Funcao ${funcao} do funcionário ${nome} nao cadastrada`);
-        await page.keyboard.press("Escape");
-        await page.waitForTimeout(333);
-      }
+      await page.waitForTimeout(300);
+
 
       await page.type('[name="Horario"]', horario);
       await page.keyboard.press("Tab");
-      await page.waitForTimeout(333);
-      if (errorPopup) {
-        console.log(`Horario ${horario} do funcionário ${nome} nao cadastrada`);
-        await page.keyboard.press("Escape");
-        await page.waitForTimeout(333);
-      }
+      await page.waitForTimeout(300);
+
+      
       
       if ( alocacao === null){
         console.log(`Alocação ${count} é nulo`);
@@ -130,12 +145,7 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
       } else {
         await page.type('[name="Alocacao"]', alocacao);
         await page.keyboard.press("Tab");
-        await page.waitForTimeout(333);
-        if (errorPopup) {
-          console.log(`Alocação ${alocacao} do funcionário ${nome} nao cadastrada`);
-          await page.keyboard.press("Escape");
-          await page.waitForTimeout(333);
-        }
+        await page.waitForTimeout(300);
       }
 
       if ( contrato === null){
@@ -145,12 +155,7 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
       } else {
         await page.type('[name="Contrato"]', contrato);
         await page.keyboard.press("Tab");
-        await page.waitForTimeout(333);
-        if (errorPopup) {
-          console.log(`contrato ${contrato} do funcionário ${nome} nao cadastrada`);
-          await page.keyboard.press("Escape");
-          await page.waitForTimeout(333);
-        }
+        await page.waitForTimeout(300);
       }
 
       if ( supervisor === null){
@@ -161,11 +166,6 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
         await page.type('[name="Supervisor"]', supervisor);
         await page.keyboard.press("Tab");
         await page.waitForTimeout(333);
-        if (errorPopup) {
-          console.log(`Alocação ${alocacao} do funcionário ${nome} nao cadastrada`);
-          await page.keyboard.press("Escape");
-          await page.waitForTimeout(333);
-        }
       }
 
       if (bh === 'nao' || bh === 'não' || bh === 'NÃO' || bh === 'NAO') {
@@ -173,24 +173,33 @@ const senha = 'Z6GdVzLzEgFtz9KH@2023';
       }
 
       if (registradorWeb === 'sim' || registradorWeb === 'SIM') {
+        await page.waitForTimeout(500);
         await page.click('[name="UtilizaWebAppPontofopag"]');
         senhaEnable = true;
       }
 
       if (appUse === 'sim' || appUse === 'SIM') {
+        await page.waitForTimeout(500);
         await page.click('[name="UtilizaAppPontofopag"]');
         senhaEnable = true;
       }
 
       if (senhaEnable === true) {
+        await page.waitForTimeout(500);
         await page.type('[name="Mob_Senha"]', senhaApp);
       }
-      await page.waitForTimeout(10000);
+
+
+      await page.waitForTimeout(1000);
+
+      await page.click('[type="submit"]');
+      await page.waitForSelector('[title="Sair"]');
 
       count++;
-      console.log(`Feito ${count} de ${jsonLeght}`)
+      console.log(`Feito ${count} de ${jsonLeght}`);
+
     }
 
-
-    // await browser.close();
+    console.log('Cadastros finalizados');
+    await browser.close();
 })();
